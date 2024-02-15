@@ -1,7 +1,7 @@
 {
   "name": "untitled",
   "version": "0.1.0",
-  "homepage": "https://webxr-indoor-navigation.github.io",
+  "homepage": "https://webxr-indoor-navigation.github.io/test",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
