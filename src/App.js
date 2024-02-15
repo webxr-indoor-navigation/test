@@ -1,6 +1,7 @@
 import './App.css';
 import {ARButton} from './lib/ARButton';
 import * as THREE from "three";
+import {MeshLine, MeshLineGeometry, MeshLineMaterial} from '@lume/three-meshline'
 
 export default function App() {
     let camera, scene, renderer;
@@ -8,17 +9,23 @@ export default function App() {
 
     const camera_height = 0;
     const target_position = new THREE.Vector3(0, camera_height - 0.1, -1); // 存储位置向量
-    const line_height = target_position.y - 0.21;
+    const line_height = camera_height - 0.5;
 
-    const points = [];
-    points.push(new THREE.Vector3(0, line_height, 0)); // 添加相机位置作为起始点
-    points.push(new THREE.Vector3(target_position.x, line_height, target_position.z)); // 添加立方体位置作为终止点
+    let points = [];
+    points.push(0, line_height, 0); // 添加相机位置作为起始点
+    points.push(target_position.x, line_height, target_position.z); // 添加立方体位置作为终止点
+    // points.push(0, 0, -1); // 添加相机位置作为起始点
+    // points.push(0.1, 0.1, -1); // 添加立方体位置作为终止点
 
     // 创建线段的几何体
-    const line_geometry = new THREE.BufferGeometry().setFromPoints(points);
-
-    // 定义线段的材质，可以设置颜色、线条宽度等
-    const line_material = new THREE.LineBasicMaterial({color: 0xff0000});
+    const line_geometry = new MeshLineGeometry();
+    line_geometry.setPoints(points);
+    const line_material = new MeshLineMaterial({
+        color: 0xff0000,
+        lineWidth: 0.1,
+        sizeAttenuation: false,
+        dashArray: 0.05
+    });
 
     function init() {
         const container = document.createElement("div");
@@ -56,8 +63,10 @@ export default function App() {
 
 
         // 创建线段对象
-        const line = new THREE.Line(line_geometry, line_material);
-
+        const line = new MeshLine(line_geometry, line_material);
+        // const raycaster = new THREE.Raycaster()
+        // // Use raycaster as usual:
+        // raycaster.intersectObject(line)
         // 将线段添加到场景中
         scene.add(line);
 
@@ -96,11 +105,13 @@ export default function App() {
     }
 
     function render() {
-        renderer.render(scene, camera);
-
         // 更新线段的起始点的x和z坐标为相机位置，y永远为-0.1
-        points[0].set(camera.position.x, line_height, camera.position.z);
-        line_geometry.setFromPoints(points);
+        points[0] = camera.position.x;
+        points[2] = camera.position.z;
+
+        line_geometry.setPoints(points);
+
+        renderer.render(scene, camera);
     }
 
     init();
